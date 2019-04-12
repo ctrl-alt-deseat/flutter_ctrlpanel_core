@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_ctrlpanel_core'
-  s.version          = '0.2.0'
+  s.version          = '0.3.0'
   s.summary          = 'Core library to build a client that interacts with the Ctrlpanel API.'
   s.description      = <<-DESC
 Core library to build a client that interacts with the Ctrlpanel API.

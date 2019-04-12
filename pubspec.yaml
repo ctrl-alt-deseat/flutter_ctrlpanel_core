@@ -1,6 +1,6 @@
 name: flutter_ctrlpanel_core
 description: Core library to build a client that interacts with the Ctrlpanel API.
-version: 0.2.0
+version: 0.3.0
 author: Linus Unnebäck <linus@folkdatorn.se>
 homepage: https://github.com/ctrl-alt-deseat/flutter_ctrlpanel_core
 
