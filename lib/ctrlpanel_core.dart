@@ -3,133 +3,141 @@ library flutter_ctrlpanel_core;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_jsbridge/jsbridge.dart';
+import 'package:flutter/services.dart';
 
-import './js_source.dart';
-import './state.dart';
+import './src/state.dart';
 
-export './state.dart';
+export './src/state.dart';
 
 class UpdatedEvent {}
 
 class CtrlpanelCore {
+  static const MethodChannel _channel = const MethodChannel('flutter_ctrlpanel_core');
+
   static Future<CtrlpanelCore> asyncInit({String apiHost, String deseatmeApiHost, String syncToken}) async {
-    final bridge = JSBridge(libraryCode);
+    final state = await _channel.invokeMethod('init', <String, dynamic>{'apiHost': apiHost, 'deseatmeApiHost': deseatmeApiHost, 'syncToken': syncToken});
 
-    await bridge.call("Ctrlpanel.boot", [apiHost, deseatmeApiHost]);
-    final state = await bridge.call("Ctrlpanel.init", [syncToken]);
-
-    return CtrlpanelCore._internal(bridge, state);
+    return CtrlpanelCore._internal(state);
   }
 
-  final JSBridge _bridge;
-  Map<String, dynamic> _state;
+  Map<dynamic, dynamic> _state;
   final StreamController<UpdatedEvent> _stream;
-  CtrlpanelCore._internal(this._bridge, this._state):
-    _stream = StreamController.broadcast();
+  CtrlpanelCore._internal(this._state) : _stream = StreamController.broadcast();
 
-  void _updateState(Map<String, dynamic> state) {
+  void _updateState(Map<dynamic, dynamic> state) {
     this._state = state;
     this._stream.add(UpdatedEvent());
   }
 
-  Stream<UpdatedEvent> get onUpdate { return _stream.stream; }
+  Stream<UpdatedEvent> get onUpdate => _stream.stream;
 
-  String get handle { return _state['handle']; }
-  String get secretKey { return _state['secretKey']; }
-  String get syncToken { return _state['syncToken']; }
+  String get _id => _state['_id'];
+  String get handle => _state['handle'];
+  String get secretKey => _state['secretKey'];
+  String get syncToken => _state['syncToken'];
+  bool get hasAccount => _state['hasAccount'];
+  bool get locked => _state['locked'];
 
-  bool get hasAccount { return _state['kind'] != 'empty'; }
-  bool get locked { return _state['kind'] == 'empty' || _state['kind'] == 'locked'; }
-
-  CtrlpanelParsedEntries get parsedEntries { return _state['parsedEntries'] != null ? CtrlpanelParsedEntries.fromJson(_state['parsedEntries']) : null; }
+  CtrlpanelParsedEntries get parsedEntries {
+    return _state['parsedEntries'] != null ? CtrlpanelParsedEntries.fromJson(Map<String, dynamic>.from(_state['parsedEntries'])) : null;
+  }
 
   Future<String> randomAccountPassword() async {
-    return await _bridge.call("Ctrlpanel.randomAccountPassword", []);
+    return await _channel.invokeMethod("randomAccountPassword", <String, dynamic>{'_id': _id}) as String;
   }
 
   Future<String> randomHandle() async {
-    return await _bridge.call("Ctrlpanel.randomHandle", []);
+    return await _channel.invokeMethod("randomHandle", <String, dynamic>{'_id': _id}) as String;
   }
 
   Future<String> randomMasterPassword() async {
-    return await _bridge.call("Ctrlpanel.randomMasterPassword", []);
+    return await _channel.invokeMethod("randomMasterPassword", <String, dynamic>{'_id': _id}) as String;
   }
 
   Future<String> randomSecretKey() async {
-    return await _bridge.call("Ctrlpanel.randomSecretKey", []);
+    return await _channel.invokeMethod("randomSecretKey", <String, dynamic>{'_id': _id}) as String;
   }
 
   Future<void> lock() async {
-    _updateState(await _bridge.call("Ctrlpanel.lock", []));
+    _updateState(await _channel.invokeMethod("lock", <String, dynamic>{'_id': _id}));
   }
 
   Future<void> reset({@required String syncToken}) async {
-    _updateState(await _bridge.call("Ctrlpanel.init", [syncToken]));
+    _updateState(await _channel.invokeMethod("reset", <String, dynamic>{'_id': _id, 'syncToken': syncToken}));
   }
 
   Future<void> signup({@required String handle, @required String secretKey, @required String masterPassword, @required bool saveDevice}) async {
-    _updateState(await _bridge.call("Ctrlpanel.signup", [handle, secretKey, masterPassword, saveDevice]));
+    _updateState(await _channel.invokeMethod("signup", <String, dynamic>{
+      '_id': _id,
+      'handle': handle,
+      'secretKey': secretKey,
+      'masterPassword': masterPassword,
+      'saveDevice': saveDevice,
+    }));
   }
 
   Future<void> login({@required String handle, @required String secretKey, @required String masterPassword, @required bool saveDevice}) async {
-    _updateState(await _bridge.call("Ctrlpanel.login", [handle, secretKey, masterPassword, saveDevice]));
+    _updateState(await _channel.invokeMethod("login", <String, dynamic>{
+      '_id': _id,
+      'handle': handle,
+      'secretKey': secretKey,
+      'masterPassword': masterPassword,
+      'saveDevice': saveDevice,
+    }));
   }
 
   Future<void> unlock({@required String masterPassword}) async {
-    _updateState(await _bridge.call("Ctrlpanel.unlock", [masterPassword]));
+    _updateState(await _channel.invokeMethod("unlock", <String, dynamic>{'_id': _id, 'masterPassword': masterPassword}));
   }
 
   Future<void> connect() async {
-    _updateState(await _bridge.call("Ctrlpanel.connect", []));
+    _updateState(await _channel.invokeMethod("connect", <String, dynamic>{'_id': _id}));
   }
 
   Future<void> sync() async {
-    _updateState(await _bridge.call("Ctrlpanel.sync", []));
+    _updateState(await _channel.invokeMethod("sync", <String, dynamic>{'_id': _id}));
   }
 
   Future<void> setPaymentInformation(CtrlpanelPaymentInformation paymentInformation) async {
-    _updateState(await _bridge.call("Ctrlpanel.setPaymentInformation", [paymentInformation]));
+    _updateState(await _channel.invokeMethod("setPaymentInformation", <String, dynamic>{'_id': _id, 'paymentInformation': paymentInformation.toJson()}));
   }
 
   Future<List<CtrlpanelAccountMatch>> accountsForHostname(String hostname) async {
-    final List<dynamic> result = await _bridge.call("Ctrlpanel.accountsForHostname", [hostname]);
-    return List.unmodifiable(result.map((data) { return CtrlpanelAccountMatch.fromJson(data); }));
+    final List<dynamic> result = await _channel.invokeMethod("accountsForHostname", <String, dynamic>{'_id': _id, 'hostname': hostname});
+    return List.unmodifiable(result.map((data) {
+      return CtrlpanelAccountMatch.fromJson(Map<String, dynamic>.from(data));
+    }));
   }
 
   Future<void> createAccount({@required String id, @required CtrlpanelAccount data}) async {
-    _updateState(await _bridge.call("Ctrlpanel.createAccount", [id, data]));
+    _updateState(await _channel.invokeMethod("createAccount", <String, dynamic>{'_id': _id, 'id': id, 'data': data.toJson()}));
   }
 
   Future<void> deleteAccount({@required String id}) async {
-    _updateState(await _bridge.call("Ctrlpanel.deleteAccount", [id]));
+    _updateState(await _channel.invokeMethod("deleteAccount", <String, dynamic>{'_id': _id, 'id': id}));
   }
 
   Future<void> updateAccount({@required String id, @required CtrlpanelAccount data}) async {
-    _updateState(await _bridge.call("Ctrlpanel.updateAccount", [id, data]));
+    _updateState(await _channel.invokeMethod("updateAccount", <String, dynamic>{'_id': _id, 'id': id, 'data': data.toJson()}));
   }
 
   Future<void> createInboxEntry({@required String id, @required CtrlpanelInboxEntry data}) async {
-    _updateState(await _bridge.call("Ctrlpanel.createInboxEntry", [id, data]));
+    _updateState(await _channel.invokeMethod("createInboxEntry", <String, dynamic>{'_id': _id, 'id': id, 'data': data.toJson()}));
   }
 
   Future<void> deleteInboxEntry({@required String id}) async {
-    _updateState(await _bridge.call("Ctrlpanel.deleteInboxEntry", [id]));
-  }
-
-  Future<void> updateInboxEntry({@required String id, @required CtrlpanelInboxEntry data}) async {
-    _updateState(await _bridge.call("Ctrlpanel.updateInboxEntry", [id, data]));
+    _updateState(await _channel.invokeMethod("deleteInboxEntry", <String, dynamic>{'_id': _id, 'id': id}));
   }
 
   Future<void> importFromDeseatme({@required String exportToken}) async {
-    _updateState(await _bridge.call("Ctrlpanel.importFromDeseatme", [exportToken]));
+    _updateState(await _channel.invokeMethod("importFromDeseatme", <String, dynamic>{'_id': _id, 'exportToken': exportToken}));
   }
 
   Future<void> clearStoredData() async {
-    _updateState(await _bridge.call("Ctrlpanel.clearStoredData", []));
+    _updateState(await _channel.invokeMethod("clearStoredData", <String, dynamic>{'_id': _id}));
   }
 
   Future<void> deleteUser() async {
-    _updateState(await _bridge.call("Ctrlpanel.deleteUser", []));
+    _updateState(await _channel.invokeMethod("deleteUser", <String, dynamic>{'_id': _id}));
   }
 }

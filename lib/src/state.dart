@@ -10,17 +10,14 @@ class CtrlpanelAccount {
 
   CtrlpanelAccount({@required this.handle, @required this.hostname, @required this.password, this.otpauth});
 
-  CtrlpanelAccount.fromJson(Map<String, dynamic> data):
-    this.handle = data['handle'],
-    this.hostname = data['hostname'],
-    this.password = data['password'],
-    this.otpauth = data['otpauth'];
+  CtrlpanelAccount.fromJson(Map<String, dynamic> data)
+      : this.handle = data['handle'],
+        this.hostname = data['hostname'],
+        this.password = data['password'],
+        this.otpauth = data['otpauth'];
 
-  Map<String, dynamic> toJson() => (
-    otpauth == null
-      ? {'handle': handle, 'hostname': hostname, 'password': password}
-      : {'handle': handle, 'hostname': hostname, 'password': password, 'otpauth': otpauth}
-  );
+  Map<String, dynamic> toJson() =>
+      (otpauth == null ? {'handle': handle, 'hostname': hostname, 'password': password} : {'handle': handle, 'hostname': hostname, 'password': password, 'otpauth': otpauth});
 
   bool operator ==(o) => o is CtrlpanelAccount && o.handle == handle && o.hostname == hostname && o.password == password && o.otpauth == otpauth;
   int get hashCode => hashValues(handle, hostname, password, otpauth);
@@ -32,9 +29,9 @@ class CtrlpanelInboxEntry {
 
   CtrlpanelInboxEntry({@required this.hostname, @required this.email});
 
-  CtrlpanelInboxEntry.fromJson(Map<String, dynamic> data):
-    this.hostname = data['hostname'],
-    this.email = data['email'];
+  CtrlpanelInboxEntry.fromJson(Map<String, dynamic> data)
+      : this.hostname = data['hostname'],
+        this.email = data['email'];
 
   Map<String, dynamic> toJson() => {'hostname': hostname, 'email': email};
 
@@ -48,9 +45,13 @@ class CtrlpanelParsedEntries {
 
   CtrlpanelParsedEntries({this.accounts = const {}, this.inbox = const {}});
 
-  CtrlpanelParsedEntries.fromJson(Map<String, dynamic> data):
-    this.accounts = (data['accounts'] as Map<String, dynamic>).map((key, value) { return MapEntry(key, CtrlpanelAccount.fromJson(value)); }),
-    this.inbox = (data['inbox'] as Map<String, dynamic>).map((key, value) { return MapEntry(key, CtrlpanelInboxEntry.fromJson(value)); });
+  CtrlpanelParsedEntries.fromJson(Map<String, dynamic> data)
+      : this.accounts = Map<String, dynamic>.from(data['accounts']).map((key, value) {
+          return MapEntry(key, CtrlpanelAccount.fromJson(Map<String, dynamic>.from(value)));
+        }),
+        this.inbox = Map<String, dynamic>.from(data['inbox']).map((key, value) {
+          return MapEntry(key, CtrlpanelInboxEntry.fromJson(Map<String, dynamic>.from(value)));
+        });
 
   Map<String, dynamic> toJson() => {'accounts': accounts, 'inbox': inbox};
 
@@ -65,14 +66,14 @@ class CtrlpanelAccountMatch {
 
   CtrlpanelAccountMatch({@required this.id, @required this.score, @required this.account});
 
-  CtrlpanelAccountMatch.fromJson(Map<String, dynamic> data):
-    this.id = data['id'],
-    this.score = (data['score'] as num).toDouble(),
-    this.account = CtrlpanelAccount.fromJson(data);
+  CtrlpanelAccountMatch.fromJson(Map<String, dynamic> data)
+      : this.id = data['id'],
+        this.score = (data['score'] as num).toDouble(),
+        this.account = CtrlpanelAccount.fromJson(data);
 
   Map<String, dynamic> toJson() => {'id': id, 'score': score}..addAll(account.toJson());
 
-  bool operator ==(o) => o is CtrlpanelAccountMatch && o.id == id && o.score == score && o.account ==account;
+  bool operator ==(o) => o is CtrlpanelAccountMatch && o.id == id && o.score == score && o.account == account;
   int get hashCode => hashValues(id, score, account);
 }
 
@@ -83,6 +84,8 @@ abstract class CtrlpanelPaymentInformation {
     assert(false);
     return null;
   }
+
+  Map<String, dynamic> toJson();
 }
 
 class CtrlpanelApplePaymentInformation extends CtrlpanelPaymentInformation {
@@ -90,9 +93,9 @@ class CtrlpanelApplePaymentInformation extends CtrlpanelPaymentInformation {
 
   CtrlpanelApplePaymentInformation({@required this.transactionIdentifier});
 
-  CtrlpanelApplePaymentInformation.fromJson(Map<String, dynamic> data):
-    assert(data['type'] == 'apple'),
-    this.transactionIdentifier = data['transactionIdentifier'];
+  CtrlpanelApplePaymentInformation.fromJson(Map<String, dynamic> data)
+      : assert(data['type'] == 'apple'),
+        this.transactionIdentifier = data['transactionIdentifier'];
 
   Map<String, dynamic> toJson() => {'type': 'apple', 'transactionIdentifier': transactionIdentifier};
 
@@ -107,11 +110,11 @@ class CtrlpanelStripePaymentInformation extends CtrlpanelPaymentInformation {
 
   CtrlpanelStripePaymentInformation({@required this.email, @required this.plan, @required this.token});
 
-  CtrlpanelStripePaymentInformation.fromJson(Map<String, dynamic> data):
-    assert(data['type'] == 'stripe'),
-    this.email = data['email'],
-    this.plan = data['plan'],
-    this.token = data['token'];
+  CtrlpanelStripePaymentInformation.fromJson(Map<String, dynamic> data)
+      : assert(data['type'] == 'stripe'),
+        this.email = data['email'],
+        this.plan = data['plan'],
+        this.token = data['token'];
 
   Map<String, dynamic> toJson() => {'type': 'stripe', 'email': email, 'plan': plan, 'token': token};
 

@@ -1,6 +1,6 @@
 import UIKit
 import Flutter
-import flutter_jsbridge
+import JSBridge
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -8,7 +8,7 @@ import flutter_jsbridge
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
   ) -> Bool {
-    SwiftFlutterJsbridgePlugin.setGlobalUIHook(window: UIApplication.shared.windows.first!)
+    JSBridge.setGlobalUIHook(window: UIApplication.shared.windows.first!)
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

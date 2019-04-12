@@ -1,37 +1,50 @@
 PODS:
+  - CtrlpanelCore (1.0.0-alpha.30):
+    - LinusU_JSBridge (= 1.0.0-alpha.15)
+    - PromiseKit (~> 6.0)
+    - Signals (~> 6.0)
   - Flutter (1.0.0)
-  - flutter_jsbridge (0.2.0):
+  - flutter_ctrlpanel_core (0.2.0):
+    - CtrlpanelCore (= 1.0.0-alpha.30)
     - Flutter
-    - PromiseKit (~> 6.8)
-  - PromiseKit (6.8.3):
-    - PromiseKit/CorePromise (= 6.8.3)
-    - PromiseKit/Foundation (= 6.8.3)
-    - PromiseKit/UIKit (= 6.8.3)
-  - PromiseKit/CorePromise (6.8.3)
-  - PromiseKit/Foundation (6.8.3):
+  - LinusU_JSBridge (1.0.0-alpha.15):
+    - PromiseKit (~> 6.0)
+  - PromiseKit (6.8.4):
+    - PromiseKit/CorePromise (= 6.8.4)
+    - PromiseKit/Foundation (= 6.8.4)
+    - PromiseKit/UIKit (= 6.8.4)
+  - PromiseKit/CorePromise (6.8.4)
+  - PromiseKit/Foundation (6.8.4):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.8.3):
+  - PromiseKit/UIKit (6.8.4):
     - PromiseKit/CorePromise
+  - Signals (6.1.0)
 
 DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
-  - flutter_jsbridge (from `.symlinks/plugins/flutter_jsbridge/ios`)
+  - flutter_ctrlpanel_core (from `.symlinks/plugins/flutter_ctrlpanel_core/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - CtrlpanelCore
+    - LinusU_JSBridge
     - PromiseKit
+    - Signals
 
 EXTERNAL SOURCES:
   Flutter:
     :path: ".symlinks/flutter/ios"
-  flutter_jsbridge:
-    :path: ".symlinks/plugins/flutter_jsbridge/ios"
+  flutter_ctrlpanel_core:
+    :path: ".symlinks/plugins/flutter_ctrlpanel_core/ios"
 
 SPEC CHECKSUMS:
+  CtrlpanelCore: b41827022251ffef073e8f3358a35ac1dbfb75df
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_jsbridge: 8f9839038733eca5a478e6b3dd39c40285b1640c
-  PromiseKit: 94c6e781838c5bf4717677d0d882b0e7250c80fc
+  flutter_ctrlpanel_core: a664de633644391a38465b29ed7de9e3b25ef1fe
+  LinusU_JSBridge: 26f133b25556dac6cab3d48ffd96a51137148c50
+  PromiseKit: 51794a832647e7b819336dc2279039ce9f1cc49b
+  Signals: f8e5c979e93c35273f8dfe55ee7f47213d3e8fe8
 
-PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497
+PODFILE CHECKSUM: 58760ca3c5878cb71ae11bd6eeff33fd4ce06e4f
 
 COCOAPODS: 1.6.1

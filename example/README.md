@@ -1,6 +1,6 @@
 # flutter_ctrlpanel_core_example
 
-Demonstrates how to use the flutter_ctrlpanel_core package.
+Demonstrates how to use the flutter_ctrlpanel_core plugin.
 
 ## Getting Started
 
